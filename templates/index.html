@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Machine Failure Prediction</title>
+    <style>
+        body {
+            background-color: #add8e6; /* Light blue background color */
+           
+        }
+        
+    </style>
+</head>
+<body>
+    <h2>Machine Failure Prediction</h2>
+    <form id="predictionForm">
+
+        <label for="airTemperature">Air Temperature (K):</label>
+        <input type="number" step="any" id="airTemperature" name="airTemperature" required><br>
+
+        <label for="processTemperature">Process Temperature (K):</label>
+        <input type="number" step="any" id="processTemperature" name="processTemperature" required><br>
+
+        <label for="rotationalSpeed">Rotational Speed (rpm):</label>
+        <input type="number" step="any" id="rotationalSpeed" name="rotationalSpeed" required><br>
+
+        <label for="torque">Torque (Nm):</label>
+        <input type="number" step="any" id="torque" name="torque" required><br>
+
+        <button type="button" onclick="predict()">Predict</button>
+    </form>
+
+    <h3>Prediction Result:</h3>
+    <p id="predictionResult"></p>
+
+    <script>
+        function predict() {
+            // Get input values from the form
+            var airTemperature = document.getElementById("airTemperature").value;
+            var processTemperature = document.getElementById("processTemperature").value;
+            var rotationalSpeed = document.getElementById("rotationalSpeed").value;
+            var torque = document.getElementById("torque").value;
+
+            // Create JSON payload
+            var data = {
+                "air_temperature": airTemperature,
+                "process_temperature": processTemperature,
+                "rotational_speed": rotationalSpeed,
+                "torque": torque
+            };
+
+            // Make a POST request to the Flask API
+            fetch("/predict", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(data),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the prediction result
+                document.getElementById("predictionResult").innerText = "Prediction: " + data.prediction[0];
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                document.getElementById("predictionResult").innerText = "Error predicting machine failure.";
+            });
+        }
+    </script>
+</body>
+</html>
